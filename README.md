@@ -57,9 +57,9 @@ MEAND expands FND by incorporating multimodal environmental information. In part
 │    └── ...
 ``` 
 
-LoRA Configurations
+Model  Enhancement
 --
-This subsection constructs a lightweight model for ship-to-shore E2E  communication latency prediction. We select deepseek-R1-1.5B model as foundation model and fune-tuning it with LoRA using our MEAND dataset to adapt the model to latency prediction tasks.
+We employ a foundation LLM as the backbone and adapt it for inland waterway communication performance prediction via EIB-LoRA. The adapted model is then compressed via quantization to enable lightweight inference on resource-constrained shipborne edge devices.
 
 Frequently Asked Questions
 --
@@ -83,7 +83,9 @@ Repository Layout
 │   └── test_labeled.json
 ├── scripts/                           # Training & quantization code
 │   ├── admm.py                        # ADMM 4-bit quantization
-│   └── train2.py                      # LoRA fine-tuning
+|   ├── train.py 
+│   └── test.py                   
+
 ├── docs/                              # Supplementary material
 │   ├── PIPELINE.md                    # End-to-end pipeline notes
 │   ├── QApair.pdf

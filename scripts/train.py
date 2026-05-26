@@ -22,10 +22,10 @@ def format_duration(seconds):
 
 script_start_time = time.time()
 
-ADMM_QUANTIZED_PATH = "/root/autodl-tmp/admm-qwen"          
-FULL_MODEL_PATH = "/root/autodl-tmp/Qwen3"                 
-TRAIN_DATA_PATH = "/root/autodl-tmp/data/train.json"
-TRAINING_OUTPUT_DIR = "/root/autodl-tmp/quanti-QwenMEAND"
+ADMM_QUANTIZED_PATH = "/path/to/quantized/model"    
+FULL_MODEL_PATH = "/path/to/original/foundation_model"
+TRAIN_DATA_PATH = "/path/to/train_labeled.json"
+TRAINING_OUTPUT_DIR = "/path/to/training/output"
 DEVICE = "cuda:0"
 IB_LAMBDA = 0.01
 

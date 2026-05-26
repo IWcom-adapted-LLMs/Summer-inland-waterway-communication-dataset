@@ -8,18 +8,27 @@
 
 > **This repository contains the core code for the paper:**  
 > *LLIPSE: Lightweight LLM‑backed Prediction Model for Inland Waterway Ship‑to‑Shore End‑to‑End Communications*  
-> Implementation of ADMM 4‑bit quantization + EIB‑LoRA fine‑tuning for latency prediction.
+## 📖 Overview
+
+Accurate prediction of ship‑to‑shore communication is essential for intelligent autonomous navigation, but is severely hindered by limited real‑world data, stringent edge resource constraints, and the inability of existing methods to capture the physical mechanisms underlying channel dynamics.  
+
+**LLIPSE** (Lightweight LLM‑backed Prediction Model for Inland Waterway Ship‑to‑Shore End‑to‑End Communications) addresses these challenges by leveraging a **large language model backbone** that is aggressively compressed via **ADMM 4‑bit quantization** and fine‑tuned with **EIB‑LoRA**. The model predicts **end‑to‑end latency** and **packet delivery ratio (PDR)** from real‑world data collected during summer inland waterway voyages.
+
+> ✅ This repository contains the **official implementation** of the paper.  
+
 
 ---
 
-## 🚀 What is this?
+## 🧠 Method Overview
 
-This repo provides a **lightweight yet powerful** recipe to:
-- 📦 **Compress LLMs** (like Qwen‑7B) to **4‑bit** using ADMM (layer‑wise, OOM‑safe).
-- 🎯 **Fine‑tune** with **EIB‑LoRA** (sparse gates + LoRA) for regression tasks.
-- ⏱️ **Predict conversation delay** (ms) with high accuracy and low inference overhead.
+| Stage | Technique | Purpose |
+|-------|-----------|---------|
+| **Quantization** | ADMM (Alternating Direction Method of Multipliers), layer‑wise, 4‑bit symmetric | Reduce model size while preserving accuracy. |
+| **Fine‑tuning** | EIB‑LoRA (LoRA + learnable sparse gates) |  enables LLM to learn how environmental factors drive communication performanc.|
+| **Evaluation** |Predict latency (ms) and PDR (%). |
 
-> ✅ Tested on **AutoDL RTX 4090 (24GB)** – quantizes 7B models without OOM.
+All experiments run on a **single NVIDIA RTX 4090 (24 GB)**. The quantization pipeline processes each linear layer sequentially, avoiding out‑of‑memory issues even for 7B‑parameter models.
+
 
 ---
 
@@ -28,36 +37,30 @@ This repo provides a **lightweight yet powerful** recipe to:
 | File | Role |
 |------|------|
 | `admm.py` | 🧊 Offline 4‑bit ADMM quantization → saves packed int8 weights |
-| `train2.py` | 🎓 Loads quantized backbone, adds EIB‑LoRA + regression head, trains with MSE + gate penalty |
+| `train.py` | 🎓 Loads quantized backbone, adds EIB‑LoRA + regression head, trains with MSE + gate penalty |
 | `test.py` | 🧪 Merges LoRA into quantized weights, evaluates MAE/RMSE/MAPE & inference time |
 | `train_labeled.json` | 📊 Training data (conversation + delay) |
 | `test_labeled.json` | 📊 Test data (same format) |
 
 ---
 
-## 🧾 Data Format
+## 📊 Data Format
 
-Your JSON file should look like this (one object per sample):
+Each JSON file (`train_labeled.json`, `test_labeled.json`) 
 
-```json
-{
-  "conversations": [
-    {"from": "human", "value": "What's the average delay?"},
-    {"from": "gpt", "value": "The average delay is 234.56 ms"}
-  ]
-}
-The script extracts the number using regex: Average delay is ([\d.]+)\s*ms
-Samples without a match are automatically skipped.
+## 🚀 Quick Start
 
-⚡ Quick Start
-1️⃣ Set paths in each script
-Script	Key variables (edit these)
-admm.py	MODEL_PATH, QUANT_OUTPUT_DIR
-train2.py	ADMM_QUANTIZED_PATH, FULL_MODEL_PATH, TRAIN_DATA_PATH (→ train_labeled.json), TRAINING_OUTPUT_DIR
-test.py	ADMM_QUANTIZED_PATH, FULL_MODEL_PATH, TRAINING_OUTPUT_DIR, TEST_DATA_PATH (→ test_labeled.json)
-2️⃣ Run quantization
-bash
-python admm.py
+### 1. Set paths in each script
+
+| Script | Key variables (edit these) |
+|--------|----------------------------|
+| `admm.py` | `MODEL_PATH`, `QUANT_OUTPUT_DIR` |
+| `train.py` | `ADMM_QUANTIZED_PATH`, `FULL_MODEL_PATH`, `TRAIN_DATA_PATH` (→ `train_labeled.json`), `TRAINING_OUTPUT_DIR` |
+| `test.py` | `ADMM_QUANTIZED_PATH`, `FULL_MODEL_PATH`, `TRAINING_OUTPUT_DIR`, `TEST_DATA_PATH` (→ `test_labeled.json`) |
+
+### 2. Run quantization
+
+    python admm.py 
 📦 Output – QUANT_OUTPUT_DIR/:
 
 admm_quantized_weights.pt – packed int4 weights + scales
@@ -66,7 +69,8 @@ quantization_config.json – meta info
 
 config.json, tokenizer files
 
-3️⃣ Train EIB‑LoRA + regression head
+
+### 3. Train EIB‑LoRA + regression head
 bash
 python train2.py
 🎓 Output – TRAINING_OUTPUT_DIR/:
@@ -77,31 +81,31 @@ target_norm.json – mean/std for denormalization
 
 tokenizer files
 
-4️⃣ Evaluate on test set
+### 4. Evaluate on test set
 bash
 python test.py
 📈 Output – console metrics + test_predictions_final.jsonl (per‑sample predictions & latencies)
 
-🧪 Example Metrics (after test.py)
+### 🧪 Example Metrics (after test.py)
 text
-MAE : 2.35 ms
-RMSE: 3.51 ms
-MAPE: 4.8%
-R²  : 0.89
-Avg inference time: 0.045 s/sample
+MAE : ms
+RMSE: ms
+MAPE: 
+Avg inference time: 
 Compression ratio: ~5.6x
-🛠️ Key Parameters
-Parameter	Default	What it does
+### ⚙️ Key Parameters (as used in the paper)
+Parameter	Value	Description
 ADMM_NBITS	4	Quantization bits
 ADMM_ITER	50	ADMM iterations per layer
-lora_r	8	LoRA rank
+lora_r (rank)	16	LoRA rank
+lora_alpha	32	LoRA scaling factor
+lora_dropout	0.2	Dropout rate for LoRA
 IB_LAMBDA	0.01	Sparsity penalty for EIB gates
 num_train_epochs	6	Training epochs
 learning_rate	5e-4	Learning rate
 📦 Dependencies
-bash
-pip install torch transformers datasets numpy
-💡 Important Notes
+   read requirements
+### 💡 Important Notes
 🧩 Layer‑wise quantization → each layer is sent to GPU, quantized, and immediately offloaded. No OOM even on 24GB GPU (tested on RTX 4090).
 
 🚫 lm_head is not quantized (kept in fp16/bf16) to preserve generation quality.

@@ -94,6 +94,16 @@ Repository Layout
 └── DATA_LICENSE                       # CC BY-NC 4.0 — covers the dataset
 ```
 
+Our paper is currently under review. We will update this section with the complete citation information upon acceptance. If you find our work useful in your research, please consider citing our paper:
+
+@article{liao2025llipse,
+  title={LLIPSE: Lightweight LLM-backed Prediction Model for Inland Waterway Ship-to-Shore End-to-End Communications},
+  author={Liao, Yangzhe and Zhai, Ningna and Wang, Siheng and Wang, Kezhi and Han, Yi and Ma, Yong and Muntean, Gabriel-Miro},
+  journal={IEEE Transactions on Mobile Computing},
+  note={Under review},
+  year={2025}
+}
+
 License
 --
 This repository uses a dual-license scheme:

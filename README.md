@@ -21,7 +21,7 @@ MEAND expands FND by incorporating multimodal environmental information. In part
 - torch >= 1.8.0
 - torchvision >= 0.9.0
 - six
-- 
+  
 ## Model Preparation
 
 - [Qwen/Qwen2-7B-Instruct](https://huggingface.co/Qwen/Qwen2-7B-Instruct)
@@ -31,24 +31,30 @@ MEAND expands FND by incorporating multimodal environmental information. In part
 ### Data preparation
 
 ```text
-train_labeled.json
-├── [0]                       # first conversation sample
-│   └── conversations
-│       ├── [0]               # query
-│       │   ├── from: "human"
-│       │   └── value: "Current time is night at 04:47 ..."
-│       └── [1]               # gpt response
-│           ├── from: "gpt"
-│           └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
-├── [1]                       # second conversation sample
-│   └── conversations
-│       ├── [0]
-│       │   ├── from: "human"
-│       │   └── value: "What's the link performance looking like? ..."
-│       └── [1]
-│           ├── from: "gpt"
-│           └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
-└── ...                      
+│MEAND/
+├──train_labeled.json
+│   ├── [0]                       # first conversation sample
+│   │       └── conversations
+│   │           ├── [0]               # query
+│   │           │   ├── from: "human"
+│   │           │   └── value: "Current time is night at 04:47 ..."
+│   │           └── [1]               # gpt response
+│   │               ├── from: "gpt"
+│   │               └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
+│   ├── [1]                           # second conversation sample
+│   │   └── conversations
+│   │       ├── [0]
+│   │       │   ├── from: "human"
+│   │       │   └── value: "What's the link performance looking like? ..."
+│   │       └── [1]
+│   │           ├── from: "gpt"
+│   │           └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
+│   └── ...
+│
+├──test_labeled.json
+│    ├──[0] 
+│    │    └── ...
+│    └── ...
 ``` 
 
 LoRA Configurations

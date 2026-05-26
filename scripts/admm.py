@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-ADMM 4-bit Quantization Script – 离线逐层量化版本（防 OOM）
-- 原始模型全程驻留在 CPU，每层权重单独送 GPU 量化后立即移出
-- 跳过 lm_head 层（大词汇表投影，量化得不偿失）
-- 输出磁盘压缩比与量化统计
-"""
 import os
 os.environ['OMP_NUM_THREADS'] = '4'
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
@@ -40,9 +33,8 @@ def model_file_size(model_path):
             glob.glob(os.path.join(model_path, "*.bin"))
     return sum(os.path.getsize(f) for f in files) if files else None
 
-# ========== ADMM 量化核心（临时 GPU 对象）==========
+# ========== ADMM 量化核心==========
 class ADMMQuantizer:
-    """单层权重临时量化器，所有数据在 GPU 上完成 ADMM 迭代"""
     def __init__(self, weight: torch.Tensor, bias: Optional[torch.Tensor], nbits=4, rho=0.01):
         self.in_features = weight.shape[1]
         self.out_features = weight.shape[0]
@@ -50,7 +42,6 @@ class ADMMQuantizer:
         self.rho = rho
         self.device = weight.device
 
-        # 初始化 ADMM 变量（全部 float32，更精确）
         self.W_fp = weight.to(torch.float32).clone()
         self.W_q = self.W_fp.clone()
         self.Z = self.W_fp.clone()
@@ -82,15 +73,11 @@ class ADMMQuantizer:
             self.Z.copy_(Z_new)
             # 更新对偶变量
             self.Lambda.add_(self.rho * (self.W_q - self.Z))
-        # 返回量化后的 Z 和 scale（均在 GPU 上）
+        # 返回量化后的 Z 和 scale
         return self.Z, self.scale, self.bias
 
 # ========== 离线逐层量化 ==========
 def quantize_offline(model, num_iter=50, rho=0.01, verbose=True):
-    """
-    遍历模型中所有 nn.Linear（跳过 lm_head），
-    将单层权重暂时送入 GPU 量化，结果存入 CPU 列表。
-    """
     quantized_data = {}
     shape_info = {}
 
@@ -102,18 +89,18 @@ def quantize_offline(model, num_iter=50, rho=0.01, verbose=True):
             if verbose:
                 print(f"Quantizing: {name}  [{module.in_features}, {module.out_features}]")
 
-            # 1. 取出权重和偏置，立即移到 GPU
+
             w = module.weight.data.detach()
             b = module.bias.data.detach() if module.bias is not None else None
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             w_gpu = w.to(device)
             b_gpu = b.to(device) if b is not None else None
 
-            # 2. 创建临时量化器并运行 ADMM
+         
             quantizer = ADMMQuantizer(w_gpu, b_gpu, nbits=ADMM_NBITS, rho=rho)
             Z, scale, bias_quant = quantizer.run_admm(iterations=num_iter)
 
-            # 3. 将结果移至 CPU 并保存
+   
             quantized_data[name] = {
                 "Z": Z.cpu(),
                 "scale": scale.cpu(),
@@ -124,7 +111,7 @@ def quantize_offline(model, num_iter=50, rho=0.01, verbose=True):
                 "bias_shape": list(bias_quant.shape) if bias_quant is not None else None
             }
 
-            # 4. 立即清理 GPU 显存
+           
             del w_gpu, b_gpu, quantizer, Z, scale, bias_quant
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
@@ -181,14 +168,12 @@ def save_quantized_model(quantized_data, shape_info, output_dir, config, tokeniz
 
 # ========== 主程序 ==========
 if __name__ == "__main__":
-    # 原始模型文件大小（用于计算压缩比）
     orig_size = model_file_size(MODEL_PATH)
     if orig_size is None:
         print("[Warn] Original model files not found, skipping disk compression ratio.")
     else:
         print(f"[Orig]  Original model file size: {format_bytes(orig_size)}")
 
-    # 加载模型到 CPU（完全不占用 GPU）
     print(f"Loading full-precision model from {MODEL_PATH} (CPU only)...")
     config = AutoConfig.from_pretrained(MODEL_PATH, trust_remote_code=True)
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, trust_remote_code=True)
@@ -196,20 +181,19 @@ if __name__ == "__main__":
         MODEL_PATH,
         config=config,
         torch_dtype=DTYPE,
-        device_map="cpu",          # 强制 CPU
+        device_map="cpu",          
         trust_remote_code=True
     )
     model.eval()
     print("Model loaded on CPU.")
 
-    # 离线逐层量化
     print("Starting offline layerwise ADMM quantization...")
     quantized_data, shape_info = quantize_offline(model, num_iter=ADMM_ITER, rho=ADMM_RHO, verbose=True)
 
-    # 保存量化结果
+    
     save_quantized_model(quantized_data, shape_info, QUANT_OUTPUT_DIR, config, tokenizer)
 
-    # 磁盘压缩比统计
+   
     quant_size = dir_size(QUANT_OUTPUT_DIR)
     print("\n" + "="*50)
     print("✅ ADMM Quantization Statistics")

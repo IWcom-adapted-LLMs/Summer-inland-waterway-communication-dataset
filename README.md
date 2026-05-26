@@ -26,6 +26,29 @@ MEAND expands FND by incorporating multimodal environmental information. In part
 - [Deepseek-R1-Distill-Qwen-1.5B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B)
 - [huggyllama/llama-7b](https://huggingface.co/huggyllama/llama-7b)
 
+### Data preparation
+
+```text
+train_labeled.json
+├── [0]                       # first conversation sample
+│   └── conversations
+│       ├── [0]               # query
+│       │   ├── from: "human"
+│       │   └── value: "Current time is night at 04:47 ..."
+│       └── [1]               # gpt response
+│           ├── from: "gpt"
+│           └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
+├── [1]                       # second conversation sample
+│   └── conversations
+│       ├── [0]
+│       │   ├── from: "human"
+│       │   └── value: "What's the link performance looking like? ..."
+│       └── [1]
+│           ├── from: "gpt"
+│           └── value: "Predicted communication performance: Average delay is 84.2 ms, packet loss rate is 0.87%."
+└── ...                      
+``` 
+
 LoRA Configurations
 --
 This subsection constructs a lightweight model for ship-to-shore E2E  communication latency prediction. We select deepseek-R1-1.5B model as foundation model and fune-tuning it with LoRA using our MEAND dataset to adapt the model to latency prediction tasks.

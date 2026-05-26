@@ -65,5 +65,37 @@ A2: The system employs a heterogeneous networking architecture. In near-shore an
 
 [1] Y. Lin, X. Ma, X. Chu, Y. Jin, Z. Yang, Y. Wang, and H. Mei, “LoRA Dropout as a sparsity regularizer for overfitting control,” arXiv preprint arXiv:2404.09610, 2024.
 
+Repository Layout
+--
+```
+.
+├── data/                              # MEAND dataset
+│   ├── Summer_InlandWaterwayComDataset.zip
+│   ├── train_labeled.json
+│   └── test_labeled.json
+├── scripts/                           # Training & quantization code
+│   ├── admm.py                        # ADMM 4-bit quantization
+│   └── train2.py                      # LoRA fine-tuning
+├── docs/                              # Supplementary material
+│   ├── PIPELINE.md                    # End-to-end pipeline notes
+│   ├── QApair.pdf
+│   └── honghu_bailuo.fig
+├── LICENSE                            # MIT — covers source code
+└── DATA_LICENSE                       # CC BY-NC 4.0 — covers the dataset
+```
+
+License
+--
+This repository uses a dual-license scheme:
+
+- **Source code** (everything under `scripts/`) is released under the
+  **MIT License** — see [`LICENSE`](LICENSE).
+- **Dataset and supplementary material** (everything under `data/` and
+  `docs/`) is released under **Creative Commons Attribution-NonCommercial
+  4.0 International (CC BY-NC 4.0)** — see [`DATA_LICENSE`](DATA_LICENSE).
+
+When citing the dataset, please refer to the attribution block at the bottom
+of [`DATA_LICENSE`](DATA_LICENSE).
+
 
 

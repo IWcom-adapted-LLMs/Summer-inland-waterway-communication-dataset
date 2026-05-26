@@ -1,0 +1,67 @@
+Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+=========================================================
+
+Copyright (c) 2025 IWcom-adapted-LLMs
+
+This license applies to the dataset files distributed in this repository,
+specifically (but not limited to):
+  - data/Summer_InlandWaterwayComDataset.zip
+  - data/train_labeled.json
+  - data/test_labeled.json
+  - docs/QApair.pdf
+  - docs/honghu_bailuo.fig
+
+Source code in this repository (e.g., scripts/) is licensed separately under
+the MIT License; see the LICENSE file at the repository root.
+
+-----------------------------------------------------------------------------
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+
+The licensor cannot revoke these freedoms as long as you follow the license
+terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the
+  license, and indicate if changes were made. You may do so in any reasonable
+  manner, but not in any way that suggests the licensor endorses you or your
+  use.
+
+  NonCommercial — You may not use the material for commercial purposes.
+
+  No additional restrictions — You may not apply legal terms or technological
+  measures that legally restrict others from doing anything the license
+  permits.
+
+Notices:
+
+  You do not have to comply with the license for elements of the material in
+  the public domain or where your use is permitted by an applicable exception
+  or limitation.
+
+  No warranties are given. The license may not give you all of the permissions
+  necessary for your intended use. For example, other rights such as
+  publicity, privacy, or moral rights may limit how you use the material.
+
+-----------------------------------------------------------------------------
+
+For the full legal code, see:
+https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+For a human-readable summary, see:
+https://creativecommons.org/licenses/by-nc/4.0/
+
+-----------------------------------------------------------------------------
+
+How to cite / attribute
+-----------------------
+
+When using this dataset, please credit the project as:
+
+  IWcom-adapted-LLMs, "Summer Inland Waterway Communication Dataset," 2025.
+  https://github.com/IWcom-adapted-LLMs/Summer-inland-waterway-communication-dataset
+  Licensed under CC BY-NC 4.0.

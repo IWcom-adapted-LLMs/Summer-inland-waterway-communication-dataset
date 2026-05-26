@@ -17,9 +17,11 @@ MEAND expands FND by incorporating multimodal environmental information. In part
 # Usage
 
 ## Requirements
+- python ==3.8
 - torch >= 1.8.0
-
-
+- torchvision >= 0.9.0
+- six
+- 
 ## Model Preparation
 
 - [Qwen/Qwen2-7B-Instruct](https://huggingface.co/Qwen/Qwen2-7B-Instruct)

@@ -94,7 +94,7 @@ MAPE:
 Avg inference time: 
 Compression ratio: ~5.6x
 ### ⚙️ Key Parameters (as used in the paper)
-Parameter	Value	Description
+```Parameter	Value	Description
 ADMM_NBITS	4	Quantization bits
 ADMM_ITER	50	ADMM iterations per layer
 lora_r (rank)	16	LoRA rank
@@ -103,6 +103,7 @@ lora_dropout	0.2	Dropout rate for LoRA
 IB_LAMBDA	0.01	Sparsity penalty for EIB gates
 num_train_epochs	6	Training epochs
 learning_rate	5e-4	Learning rate
+```
 📦 Dependencies
    read requirements
 ### 💡 Important Notes
